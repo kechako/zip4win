@@ -1,6 +1,20 @@
 package zip4win
 
-import "testing"
+import (
+	"bytes"
+	"testing"
+)
+
+func TestNew(t *testing.T) {
+	buf := new(bytes.Buffer)
+	w := New(buf)
+	if w == nil {
+		t.Error("New retruned nil.")
+	}
+	if w.zw == nil {
+		t.Error("New returned uninitialized value.")
+	}
+}
 
 func TestConvertToShiftJIS(t *testing.T) {
 	expect := "\x82\xA0\x82\xA2\x82\xA4\x82\xA6\x82\xA8"
