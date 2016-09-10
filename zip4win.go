@@ -10,6 +10,7 @@ import (
 	"github.com/pkg/errors"
 	"golang.org/x/text/encoding/japanese"
 	"golang.org/x/text/transform"
+	"golang.org/x/text/unicode/norm"
 )
 
 // Writer implements a zip file writer.
@@ -44,6 +45,7 @@ func (w *Writer) Create(fi os.FileInfo, name string) (io.Writer, error) {
 		}
 	}
 	name = filepath.ToSlash(filepath.Clean(name))
+	name = norm.NFC.String(name)
 
 	if fi.IsDir() {
 		name = name + "/"
