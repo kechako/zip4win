@@ -7,6 +7,7 @@ import (
 	"io"
 	"os"
 	"path/filepath"
+	"strings"
 
 	"github.com/pkg/errors"
 	"golang.org/x/text/encoding/japanese"
@@ -14,19 +15,23 @@ import (
 	"golang.org/x/text/unicode/norm"
 )
 
+const dsStoreName = ".ds_store"
+
 // Writer implements a zip file writer.
 type Writer struct {
-	zw          *zip.Writer
-	ShiftJIS    bool
-	Normalizing bool
+	zw             *zip.Writer
+	ShiftJIS       bool
+	Normalizing    bool
+	ExcludeDSStore bool
 }
 
 // New returns a new Writer wrting a zip file to w with converting file name encoding.
 func New(w io.Writer) *Writer {
 	return &Writer{
-		zw:          zip.NewWriter(w),
-		ShiftJIS:    false,
-		Normalizing: true,
+		zw:             zip.NewWriter(w),
+		ShiftJIS:       false,
+		Normalizing:    true,
+		ExcludeDSStore: true,
 	}
 }
 
@@ -87,6 +92,9 @@ func (w *Writer) WriteEntry(path string) error {
 			return err
 		}
 		if os.SameFile(fi, fiWd) {
+			return nil
+		}
+		if w.ExcludeDSStore && strings.ToLower(fi.Name()) == dsStoreName {
 			return nil
 		}
 
