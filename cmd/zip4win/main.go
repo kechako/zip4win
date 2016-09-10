@@ -29,11 +29,13 @@ func main() {
 	var shiftJIS bool
 	var nonorm bool
 	var includeDSStore bool
+	var excludeDotfiles bool
 
 	flag.Usage = printHelp
 	flag.BoolVar(&shiftJIS, "sjis", false, "Encode a file name in ShiftJIS")
 	flag.BoolVar(&nonorm, "nonorm", false, "Disable normalizing a file name with NFC")
 	flag.BoolVar(&includeDSStore, "include-dsstore", false, "Include .DSStore in a zip archive.")
+	flag.BoolVar(&excludeDotfiles, "exclude-dotfiles", false, "Exclude dotfiles in a zip archive.")
 	flag.Parse()
 	args := flag.Args()
 	if len(args) < 2 {
@@ -55,6 +57,7 @@ func main() {
 	w.ShiftJIS = shiftJIS
 	w.Normalizing = !nonorm
 	w.ExcludeDSStore = !includeDSStore
+	w.ExcludeDotfiles = excludeDotfiles
 
 	for _, path := range paths {
 		err = w.WriteEntry(path)

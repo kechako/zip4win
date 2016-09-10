@@ -19,19 +19,21 @@ const dsStoreName = ".ds_store"
 
 // Writer implements a zip file writer.
 type Writer struct {
-	zw             *zip.Writer
-	ShiftJIS       bool
-	Normalizing    bool
-	ExcludeDSStore bool
+	zw              *zip.Writer
+	ShiftJIS        bool
+	Normalizing     bool
+	ExcludeDSStore  bool
+	ExcludeDotfiles bool
 }
 
 // New returns a new Writer wrting a zip file to w with converting file name encoding.
 func New(w io.Writer) *Writer {
 	return &Writer{
-		zw:             zip.NewWriter(w),
-		ShiftJIS:       false,
-		Normalizing:    true,
-		ExcludeDSStore: true,
+		zw:              zip.NewWriter(w),
+		ShiftJIS:        false,
+		Normalizing:     true,
+		ExcludeDSStore:  true,
+		ExcludeDotfiles: false,
 	}
 }
 
@@ -95,6 +97,9 @@ func (w *Writer) WriteEntry(path string) error {
 			return nil
 		}
 		if w.ExcludeDSStore && strings.ToLower(fi.Name()) == dsStoreName {
+			return nil
+		}
+		if w.ExcludeDotfiles && strings.HasPrefix(fi.Name(), ".") {
 			return nil
 		}
 
