@@ -22,6 +22,10 @@ func printError(err error) {
 
 // entry point
 func main() {
+	var shiftJIS bool
+
+	flag.Usage = printHelp
+	flag.BoolVar(&shiftJIS, "sjis", false, "Encode file name in ShiftJIS (defalt: disabled)")
 	flag.Parse()
 	args := flag.Args()
 	if len(args) < 2 {
@@ -39,6 +43,8 @@ func main() {
 
 	w := zip4win.New(fp)
 	defer w.Close()
+
+	w.ShiftJIS = shiftJIS
 
 	for _, path := range paths {
 		err = w.WriteEntry(path)
