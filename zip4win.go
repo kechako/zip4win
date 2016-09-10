@@ -16,15 +16,17 @@ import (
 
 // Writer implements a zip file writer.
 type Writer struct {
-	zw       *zip.Writer
-	ShiftJIS bool
+	zw          *zip.Writer
+	ShiftJIS    bool
+	Normalizing bool
 }
 
 // New returns a new Writer wrting a zip file to w with converting file name encoding.
 func New(w io.Writer) *Writer {
 	return &Writer{
-		zw:       zip.NewWriter(w),
-		ShiftJIS: false,
+		zw:          zip.NewWriter(w),
+		ShiftJIS:    false,
+		Normalizing: true,
 	}
 }
 
@@ -48,7 +50,10 @@ func (w *Writer) create(fi os.FileInfo, name string) (io.Writer, error) {
 		}
 	}
 	name = filepath.ToSlash(filepath.Clean(name))
-	name = norm.NFC.String(name)
+
+	if w.Normalizing {
+		name = norm.NFC.String(name)
+	}
 
 	if fi.IsDir() {
 		name = name + "/"

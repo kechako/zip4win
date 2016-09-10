@@ -23,9 +23,11 @@ func printError(err error) {
 // entry point
 func main() {
 	var shiftJIS bool
+	var nonorm bool
 
 	flag.Usage = printHelp
 	flag.BoolVar(&shiftJIS, "sjis", false, "Encode file name in ShiftJIS (defalt: disabled)")
+	flag.BoolVar(&nonorm, "nonorm", false, "Disable normalizing a file name with NFC")
 	flag.Parse()
 	args := flag.Args()
 	if len(args) < 2 {
@@ -45,6 +47,7 @@ func main() {
 	defer w.Close()
 
 	w.ShiftJIS = shiftJIS
+	w.Normalizing = !nonorm
 
 	for _, path := range paths {
 		err = w.WriteEntry(path)
