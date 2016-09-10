@@ -8,6 +8,16 @@ import (
 	"github.com/kechako/zip4win"
 )
 
+var (
+	version  string
+	revision string
+)
+
+// printVersion output a version info.
+func printVersion() {
+	fmt.Printf("%s %s (%s)\n", os.Args[0], version, revision)
+}
+
 // printHelp outputs a help message to STDERR.
 func printHelp() {
 	fmt.Fprintf(os.Stderr, `Usage: %s [options] zipfile file ...
@@ -30,13 +40,22 @@ func main() {
 	var nonorm bool
 	var includeDSStore bool
 	var excludeDotfiles bool
+	var printVer bool
 
 	flag.Usage = printHelp
 	flag.BoolVar(&shiftJIS, "sjis", false, "Encode a file name in ShiftJIS")
 	flag.BoolVar(&nonorm, "nonorm", false, "Disable normalizing a file name with NFC")
 	flag.BoolVar(&includeDSStore, "include-dsstore", false, "Include .DSStore in a zip archive.")
 	flag.BoolVar(&excludeDotfiles, "exclude-dotfiles", false, "Exclude dotfiles in a zip archive.")
+	flag.BoolVar(&printVer, "version", false, "Show version info.")
+
 	flag.Parse()
+
+	if printVer {
+		printVersion()
+		return
+	}
+
 	args := flag.Args()
 	if len(args) < 2 {
 		printHelp()
