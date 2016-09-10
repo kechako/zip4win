@@ -4,6 +4,8 @@ import (
 	"archive/zip"
 	"bytes"
 	"io"
+	"os"
+	"path/filepath"
 
 	"github.com/pkg/errors"
 	"golang.org/x/text/encoding/japanese"
@@ -28,13 +30,31 @@ func (w *Writer) Close() error {
 }
 
 // Create adds a file to zip file using the provided name.
-func (w *Writer) Create(name string) (io.Writer, error) {
-	sname, err := convertToShiftJIS(name)
+func (w *Writer) Create(fi os.FileInfo, name string) (io.Writer, error) {
+	h, err := zip.FileInfoHeader(fi)
 	if err != nil {
 		return nil, err
 	}
 
-	return w.zw.Create(sname)
+	if filepath.IsAbs(name) {
+		// If path is absolute, a entry name is a relative path from root.
+		name, err = filepath.Rel(filepath.Clean("/"), name)
+		if err != nil {
+			return nil, errors.Wrapf(err, "Could not get a relative path from root : %s", name)
+		}
+	}
+	name = filepath.ToSlash(filepath.Clean(name))
+
+	if fi.IsDir() {
+		name = name + "/"
+	}
+
+	h.Name, err = convertToShiftJIS(name)
+	if err != nil {
+		return nil, err
+	}
+
+	return w.zw.CreateHeader(h)
 }
 
 // convertToShiftJIS converts a UTF-8 string to a ShiftJIS string.
