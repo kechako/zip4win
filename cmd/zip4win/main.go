@@ -10,7 +10,11 @@ import (
 
 // printHelp outputs a help message to STDERR.
 func printHelp() {
-	fmt.Fprintf(os.Stderr, `Usage: %s zipfile file ...`, os.Args[0])
+	fmt.Fprintf(os.Stderr, `Usage: %s [options] zipfile file ...
+
+options:
+`, os.Args[0])
+	flag.PrintDefaults()
 	os.Exit(1)
 }
 
@@ -26,7 +30,7 @@ func main() {
 	var nonorm bool
 
 	flag.Usage = printHelp
-	flag.BoolVar(&shiftJIS, "sjis", false, "Encode file name in ShiftJIS (defalt: disabled)")
+	flag.BoolVar(&shiftJIS, "sjis", false, "Encode a file name in ShiftJIS")
 	flag.BoolVar(&nonorm, "nonorm", false, "Disable normalizing a file name with NFC")
 	flag.Parse()
 	args := flag.Args()
