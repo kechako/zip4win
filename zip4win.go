@@ -40,7 +40,7 @@ func (w *Writer) Close() error {
 	return w.zw.Close()
 }
 
-// Create adds a file to zip file using the provided name.
+// create adds a file to zip file using the provided name.
 func (w *Writer) create(fi os.FileInfo, name string) (io.Writer, error) {
 	h, err := zip.FileInfoHeader(fi)
 	if err != nil {
@@ -76,7 +76,7 @@ func (w *Writer) create(fi os.FileInfo, name string) (io.Writer, error) {
 	return w.zw.CreateHeader(h)
 }
 
-// writeFile add a new entry to zip archive.
+// WriteEntry add a new entry to zip archive.
 func (w *Writer) WriteEntry(path string) error {
 	wd, err := os.Getwd()
 	if err != nil {
