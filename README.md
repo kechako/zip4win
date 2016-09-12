@@ -11,6 +11,6 @@ $ go get github.com/kechako/zip4win/cmd/zip4win
 ## Usage
 
 ```sh
-$ zip4win zipfile file ...
+$ zip4win -sjis zipfile file ...
 ```
 
