@@ -1,11 +1,13 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
 	"os"
 
 	"github.com/kechako/zip4win"
+	"github.com/pkg/errors"
 )
 
 var (
@@ -78,10 +80,25 @@ func main() {
 	w.ExcludeDSStore = !includeDSStore
 	w.ExcludeDotfiles = excludeDotfiles
 
-	for _, path := range paths {
-		err = w.WriteEntry(path)
-		if err != nil {
-			printError(err)
+	if args[0] == "-" {
+		// Input from stdin
+		s := bufio.NewScanner(os.Stdin)
+		for s.Scan() {
+			err = w.WriteEntry(s.Text())
+			if err != nil {
+				printError(err)
+			}
+		}
+		if err = s.Err(); err != nil {
+			printError(errors.Wrap(err, "Could not read from STDIN."))
+		}
+	} else {
+		// Input from parameters
+		for _, path := range paths {
+			err = w.WriteEntry(path)
+			if err != nil {
+				printError(err)
+			}
 		}
 	}
 }
