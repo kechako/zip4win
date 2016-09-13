@@ -80,7 +80,7 @@ func main() {
 	w.ExcludeDSStore = !includeDSStore
 	w.ExcludeDotfiles = excludeDotfiles
 
-	if args[0] == "-" {
+	if paths[0] == "-" {
 		// Input from stdin
 		s := bufio.NewScanner(os.Stdin)
 		for s.Scan() {
