@@ -11,7 +11,7 @@ import (
 )
 
 var (
-	version  string
+	version  string = "1.0"
 	revision string
 )
 
