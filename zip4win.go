@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"time"
 
 	"github.com/pkg/errors"
 	"golang.org/x/text/unicode/norm"
@@ -20,6 +21,7 @@ type Writer struct {
 	Normalizing     bool
 	ExcludeDSStore  bool
 	ExcludeDotfiles bool
+	UseUTC          bool
 }
 
 // New returns a new Writer wrting a zip file to w with converting file name encoding.
@@ -29,6 +31,7 @@ func New(w io.Writer) *Writer {
 		Normalizing:     true,
 		ExcludeDSStore:  true,
 		ExcludeDotfiles: false,
+		UseUTC:          false,
 	}
 }
 
@@ -65,6 +68,12 @@ func (w *Writer) create(fi os.FileInfo, name string) (io.Writer, error) {
 
 	// Set UTF-8 Flag
 	h.Flags = h.Flags | 0x0800
+
+	if !w.UseUTC {
+		// Change mod time to local.
+		_, offset := time.Now().Local().Zone()
+		h.SetModTime(h.ModTime().Add(time.Duration(offset) * time.Second))
+	}
 
 	return w.zw.CreateHeader(h)
 }

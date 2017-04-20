@@ -41,12 +41,14 @@ func main() {
 	var nonorm bool
 	var includeDSStore bool
 	var excludeDotfiles bool
+	var useUTC bool
 	var printVer bool
 
 	flag.Usage = printHelp
 	flag.BoolVar(&nonorm, "nonorm", false, "Disable normalizing a file name with NFC")
 	flag.BoolVar(&includeDSStore, "include-dsstore", false, "Include .DSStore in a zip archive.")
 	flag.BoolVar(&excludeDotfiles, "exclude-dotfiles", false, "Exclude dotfiles in a zip archive.")
+	flag.BoolVar(&useUTC, "utc", false, "Use UTC as mod time. Default use local time.")
 	flag.BoolVar(&printVer, "version", false, "Show version info.")
 
 	flag.Parse()
@@ -76,6 +78,7 @@ func main() {
 	w.Normalizing = !nonorm
 	w.ExcludeDSStore = !includeDSStore
 	w.ExcludeDotfiles = excludeDotfiles
+	w.UseUTC = useUTC
 
 	if paths[0] == "-" {
 		// Input from stdin
