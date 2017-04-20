@@ -1,16 +1,18 @@
 # Zip4win
 
-Zip4win creats a zip archive with a file name that has been encoded in ShiftJIS.
+zip4win creats a zip archive with a file name that has been normalized in NFC.
+
+zip4win sets the UTF-8 flag to local file headers.
 
 ## Installation
 
 ```sh
-$ go get github.com/kechako/zip4win/cmd/zip4win
+$ go get -u github.com/kechako/zip4win/cmd/zip4win
 ```
 
 ## Usage
 
 ```sh
-$ zip4win -sjis zipfile file ...
+$ zip4win zipfile file ...
 ```
 
