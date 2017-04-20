@@ -45,7 +45,7 @@ func main() {
 	var printVer bool
 
 	flag.Usage = printHelp
-	flag.BoolVar(&nonorm, "nonorm", false, "Disable normalizing a file name with NFC")
+	flag.BoolVar(&nonorm, "nonorm", false, "Disable normalizing a file name with NFC.")
 	flag.BoolVar(&includeDSStore, "include-dsstore", false, "Include .DSStore in a zip archive.")
 	flag.BoolVar(&excludeDotfiles, "exclude-dotfiles", false, "Exclude dotfiles in a zip archive.")
 	flag.BoolVar(&useUTC, "utc", false, "Use UTC as mod time. Default use local time.")
