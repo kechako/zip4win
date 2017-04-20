@@ -2,7 +2,6 @@ package zip4win
 
 import (
 	"archive/zip"
-	"bytes"
 	"fmt"
 	"io"
 	"os"
@@ -10,8 +9,6 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"golang.org/x/text/encoding/japanese"
-	"golang.org/x/text/transform"
 	"golang.org/x/text/unicode/norm"
 )
 
@@ -20,7 +17,6 @@ const dsStoreName = ".ds_store"
 // Writer implements a zip file writer.
 type Writer struct {
 	zw              *zip.Writer
-	ShiftJIS        bool
 	Normalizing     bool
 	ExcludeDSStore  bool
 	ExcludeDotfiles bool
@@ -30,7 +26,6 @@ type Writer struct {
 func New(w io.Writer) *Writer {
 	return &Writer{
 		zw:              zip.NewWriter(w),
-		ShiftJIS:        false,
 		Normalizing:     true,
 		ExcludeDSStore:  true,
 		ExcludeDotfiles: false,
@@ -66,14 +61,10 @@ func (w *Writer) create(fi os.FileInfo, name string) (io.Writer, error) {
 		name = name + "/"
 	}
 
-	if w.ShiftJIS {
-		name, err = convertToShiftJIS(name)
-		if err != nil {
-			return nil, err
-		}
-	}
-
 	h.Name = name
+
+	// Set UTF-8 Flag
+	h.Flags = h.Flags | 0x0800
 
 	return w.zw.CreateHeader(h)
 }
@@ -141,18 +132,4 @@ func (w *Writer) writeFile(path string, fi os.FileInfo) error {
 	}
 
 	return nil
-}
-
-// convertToShiftJIS converts a UTF-8 string to a ShiftJIS string.
-func convertToShiftJIS(name string) (string, error) {
-	var buf bytes.Buffer
-	w := transform.NewWriter(&buf, japanese.ShiftJIS.NewEncoder())
-	defer w.Close()
-
-	_, err := w.Write([]byte(name))
-	if err != nil {
-		return "", errors.Wrap(err, "Could not convert a utf8 string to a sjis string.")
-	}
-
-	return buf.String(), nil
 }

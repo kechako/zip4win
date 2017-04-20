@@ -38,14 +38,12 @@ func printError(err error) {
 
 // entry point
 func main() {
-	var shiftJIS bool
 	var nonorm bool
 	var includeDSStore bool
 	var excludeDotfiles bool
 	var printVer bool
 
 	flag.Usage = printHelp
-	flag.BoolVar(&shiftJIS, "sjis", false, "Encode a file name in ShiftJIS")
 	flag.BoolVar(&nonorm, "nonorm", false, "Disable normalizing a file name with NFC")
 	flag.BoolVar(&includeDSStore, "include-dsstore", false, "Include .DSStore in a zip archive.")
 	flag.BoolVar(&excludeDotfiles, "exclude-dotfiles", false, "Exclude dotfiles in a zip archive.")
@@ -75,7 +73,6 @@ func main() {
 	w := zip4win.New(fp)
 	defer w.Close()
 
-	w.ShiftJIS = shiftJIS
 	w.Normalizing = !nonorm
 	w.ExcludeDSStore = !includeDSStore
 	w.ExcludeDotfiles = excludeDotfiles
