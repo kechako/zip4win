@@ -7,7 +7,6 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
-	"time"
 
 	"github.com/pkg/errors"
 	"golang.org/x/text/unicode/norm"
@@ -67,9 +66,7 @@ func (w *Writer) create(fi os.FileInfo, name string) (io.Writer, error) {
 	h.Name = name
 
 	if !w.UseUTC {
-		// Change mod time to local.
-		_, offset := time.Now().Local().Zone()
-		h.SetModTime(h.ModTime().Add(time.Duration(offset) * time.Second))
+		h.Modified = fi.ModTime()
 	}
 
 	return w.zw.CreateHeader(h)
