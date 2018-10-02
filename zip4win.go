@@ -66,9 +66,6 @@ func (w *Writer) create(fi os.FileInfo, name string) (io.Writer, error) {
 
 	h.Name = name
 
-	// Set UTF-8 Flag
-	h.Flags = h.Flags | 0x0800
-
 	if !w.UseUTC {
 		// Change mod time to local.
 		_, offset := time.Now().Local().Zone()
