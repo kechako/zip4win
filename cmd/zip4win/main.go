@@ -42,6 +42,7 @@ func main() {
 	var includeDSStore bool
 	var excludeDotfiles bool
 	var useUTC bool
+	var compLevel int
 	var printVer bool
 
 	flag.Usage = printHelp
@@ -49,9 +50,18 @@ func main() {
 	flag.BoolVar(&includeDSStore, "include-dsstore", false, "Include .DSStore in a zip archive.")
 	flag.BoolVar(&excludeDotfiles, "exclude-dotfiles", false, "Exclude dotfiles in a zip archive.")
 	flag.BoolVar(&useUTC, "utc", false, "Use UTC as mod time. Default use local time.")
+	flag.IntVar(&compLevel, "level", 6,
+		`Compression level. 0 indicates no compression, 1 indicates the
+fastest compression speed (less compression) and 9 indicates the
+slowest compression speed (optimum compression).`)
 	flag.BoolVar(&printVer, "version", false, "Show version info.")
 
 	flag.Parse()
+
+	if compLevel < 0 || compLevel > 9 {
+		fmt.Fprintln(os.Stderr, "compression level is not valid.")
+		printHelp()
+	}
 
 	if printVer {
 		printVersion()
@@ -79,6 +89,7 @@ func main() {
 	w.ExcludeDSStore = !includeDSStore
 	w.ExcludeDotfiles = excludeDotfiles
 	w.UseUTC = useUTC
+	w.CompressionLevel = compLevel
 
 	if paths[0] == "-" {
 		// Input from stdin

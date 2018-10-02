@@ -7,6 +7,7 @@ import (
 	"os"
 	"path/filepath"
 	"strings"
+	"sync"
 
 	"github.com/pkg/errors"
 	"golang.org/x/text/unicode/norm"
@@ -16,22 +17,33 @@ const dsStoreName = ".ds_store"
 
 // Writer implements a zip file writer.
 type Writer struct {
-	zw              *zip.Writer
-	Normalizing     bool
-	ExcludeDSStore  bool
-	ExcludeDotfiles bool
-	UseUTC          bool
+	zw               *zip.Writer
+	Normalizing      bool
+	ExcludeDSStore   bool
+	ExcludeDotfiles  bool
+	UseUTC           bool
+	CompressionLevel int
+
+	fwPool sync.Pool
 }
 
 // New returns a new Writer wrting a zip file to w with converting file name encoding.
 func New(w io.Writer) *Writer {
-	return &Writer{
-		zw:              zip.NewWriter(w),
-		Normalizing:     true,
-		ExcludeDSStore:  true,
-		ExcludeDotfiles: false,
-		UseUTC:          false,
+	writer := &Writer{
+		zw:               zip.NewWriter(w),
+		Normalizing:      true,
+		ExcludeDSStore:   true,
+		ExcludeDotfiles:  false,
+		UseUTC:           false,
+		CompressionLevel: 6,
 	}
+	writer.init()
+
+	return writer
+}
+
+func (w *Writer) init() {
+	w.zw.RegisterCompressor(zip.Deflate, zip.Compressor(w.newFlateWriter))
 }
 
 // Close finishes writing the zip file by writing the central directory. It does not (and cannot) close the underlying writer.
