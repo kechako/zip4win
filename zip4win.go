@@ -58,6 +58,8 @@ func (w *Writer) create(fi os.FileInfo, name string) (io.Writer, error) {
 		return nil, err
 	}
 
+	h.Method = zip.Deflate
+
 	if filepath.IsAbs(name) {
 		// If path is absolute, a entry name is a relative path from root.
 		name, err = filepath.Rel(filepath.Clean("/"), name)
