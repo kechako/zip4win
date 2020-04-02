@@ -10,13 +10,12 @@ import (
 )
 
 var (
-	version  = "1.0"
-	revision string
+	version = "1.0"
 )
 
 // printVersion output a version info.
 func printVersion() {
-	fmt.Printf("%s %s (%s)\n", os.Args[0], version, revision)
+	fmt.Printf("%s %s\n", os.Args[0], version)
 }
 
 // printHelp outputs a help message to STDERR.
