@@ -1,6 +1,5 @@
 module github.com/kechako/zip4win
 
-require (
-	github.com/pkg/errors v0.8.0
-	golang.org/x/text v0.3.0
-)
+go 1.14
+
+require golang.org/x/text v0.3.0

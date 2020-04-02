@@ -7,7 +7,6 @@ import (
 	"os"
 
 	"github.com/kechako/zip4win"
-	"github.com/pkg/errors"
 )
 
 var (
@@ -101,7 +100,7 @@ slowest compression speed (optimum compression).`)
 			}
 		}
 		if err = s.Err(); err != nil {
-			printError(errors.Wrap(err, "Could not read from STDIN."))
+			printError(fmt.Errorf("could not read from STDIN: %w", err))
 		}
 	} else {
 		// Input from parameters

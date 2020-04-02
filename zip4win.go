@@ -9,7 +9,6 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/pkg/errors"
 	"golang.org/x/text/unicode/norm"
 )
 
@@ -64,7 +63,7 @@ func (w *Writer) create(fi os.FileInfo, name string) (io.Writer, error) {
 		// If path is absolute, a entry name is a relative path from root.
 		name, err = filepath.Rel(filepath.Clean("/"), name)
 		if err != nil {
-			return nil, errors.Wrapf(err, "Could not get a relative path from root : %s", name)
+			return nil, fmt.Errorf("could not get a relative path from root [%s]: %w", name, err)
 		}
 	}
 	name = filepath.ToSlash(filepath.Clean(name))
@@ -90,11 +89,11 @@ func (w *Writer) create(fi os.FileInfo, name string) (io.Writer, error) {
 func (w *Writer) WriteEntry(path string) error {
 	wd, err := os.Getwd()
 	if err != nil {
-		return errors.Wrap(err, "Cound not get the working directory.")
+		return fmt.Errorf("cound not get the working directory: %w", err)
 	}
 	fiWd, err := os.Lstat(wd)
 	if err != nil {
-		return errors.Wrap(err, "Cound not get the working directory.")
+		return fmt.Errorf("cound not get the working directory: %w", err)
 	}
 
 	err = filepath.Walk(path, func(p string, fi os.FileInfo, err error) error {
@@ -115,7 +114,7 @@ func (w *Writer) WriteEntry(path string) error {
 	})
 	if err != nil {
 		if pathErr, ok := err.(*os.PathError); ok {
-			return errors.Wrapf(err, "No such file or directory : %s", pathErr.Path)
+			return fmt.Errorf("no such file or directory [%s]: %w", pathErr.Path, err)
 		}
 
 		return err
@@ -128,7 +127,7 @@ func (w *Writer) WriteEntry(path string) error {
 func (w *Writer) writeFile(path string, fi os.FileInfo) error {
 	fw, err := w.create(fi, path)
 	if err != nil {
-		return errors.Wrap(err, "Could not create a new file in zip archive.")
+		return fmt.Errorf("could not create a new file in zip archive: %w", err)
 	}
 
 	fmt.Printf("%s\n", path)
@@ -139,13 +138,13 @@ func (w *Writer) writeFile(path string, fi os.FileInfo) error {
 
 	fp, err := os.Open(path)
 	if err != nil {
-		return errors.Wrapf(err, "Could not open the file [%s].", path)
+		return fmt.Errorf("could not open the file [%s]: %w", path, err)
 	}
 	defer fp.Close()
 
 	_, err = io.Copy(fw, fp)
 	if err != nil {
-		return errors.Wrap(err, "Could not write to zip archive.")
+		return fmt.Errorf("could not write to zip archive: %w", err)
 	}
 
 	return nil
