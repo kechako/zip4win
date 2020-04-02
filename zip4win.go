@@ -1,3 +1,4 @@
+// Package zip4win provides Zip archiver.
 package zip4win
 
 import (
